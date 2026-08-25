@@ -56,16 +56,73 @@
     </div>
 
     <!-- A classic (non-module) script, so it runs even when module scripts are
-         blocked — which is exactly the case we need to explain. -->
+         blocked or missing — exactly the cases we need to explain. -->
     <script>
-      if (location.protocol === 'file:') {
-        document.getElementById('boot-reason').innerHTML =
-          'This page was opened straight from your computer (a <strong>file://</strong> address). ' +
-          'Browsers block the app’s JavaScript on file:// for security, so nothing can load.' +
-          '<br><br><strong>Fix:</strong> open <strong>http://localhost:5173</strong> instead, ' +
-          'or use the single-file build <strong>dist/aila-birthday.html</strong>, which is ' +
-          'made for opening directly.'
-      }
+      (function () {
+        var reason = document.getElementById('boot-reason')
+        var failures = []
+
+        function say(html) {
+          if (reason) reason.innerHTML = html
+        }
+
+        if (location.protocol === 'file:') {
+          say(
+            'This page was opened straight from your computer (a <strong>file://</strong> address). ' +
+              'Browsers block the app’s JavaScript on file:// for security, so nothing can load.' +
+              '<br><br><strong>Fix:</strong> open <strong>http://localhost:5173</strong> instead, ' +
+              'or use the single-file build <strong>dist/aila-birthday.html</strong>, which is ' +
+              'made for opening directly.',
+          )
+          return
+        }
+
+        // Resource errors don't bubble, but they do fire on window in the
+        // capture phase — that's how we learn which file was missing.
+        window.addEventListener(
+          'error',
+          function (event) {
+            var target = event.target
+            if (target && (target.src || target.href)) {
+              failures.push(String(target.src || target.href))
+            } else if (event.message) {
+              failures.push(event.message)
+            }
+          },
+          true,
+        )
+
+        // If React had mounted, it would have removed this fallback by now.
+        window.setTimeout(function () {
+          if (!document.getElementById('boot-fallback')) return
+
+          var isSource = failures.some(function (f) {
+            return f.indexOf('/src/') !== -1
+          })
+
+          if (isSource) {
+            say(
+              'The server is sending the <strong>project source</strong>, not the built site. ' +
+                'Browsers can’t run <code>.jsx</code> files directly.' +
+                '<br><br><strong>Fix:</strong> run <code>npm run build</code> and host the ' +
+                '<strong>dist/</strong> folder — not the project root.',
+            )
+          } else if (failures.length) {
+            say(
+              'The app’s files couldn’t be loaded:<br><code style="font-size:.8em;word-break:break-all">' +
+                failures.slice(0, 3).join('<br>') +
+                '</code><br><br><strong>Fix:</strong> make sure the whole <strong>dist/</strong> ' +
+                'folder was uploaded, including the <strong>assets/</strong> folder next to ' +
+                '<code>index.html</code>.',
+            )
+          } else {
+            say(
+              'The page loaded but the app never started. Open the browser console ' +
+                '(⌥⌘I / F12) — the first red error there says why.',
+            )
+          }
+        }, 2500)
+      })()
     </script>
 
     <noscript>
