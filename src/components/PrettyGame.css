@@ -1,0 +1,514 @@
+.pretty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.6rem, 2vw, 1.1rem);
+  width: min(100%, 1080px);
+}
+
+.pretty__title {
+  font-size: clamp(1.7rem, 6.6vw, 3.6rem);
+}
+
+/* ------------------------------ catch-o-meter ------------------------------ */
+
+.pretty__meter {
+  position: relative;
+  width: min(100%, 420px);
+  height: 34px;
+  border-radius: var(--radius-pill);
+  background: var(--white);
+  border: 3px solid var(--pink-200);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.pretty__meter-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  background: repeating-linear-gradient(
+    115deg,
+    var(--pink-400) 0 12px,
+    var(--pink-300) 12px 24px
+  );
+}
+
+.pretty__meter[data-active='true'] .pretty__meter-fill {
+  animation-name: meter-fill;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+.pretty__meter[data-done='true'] .pretty__meter-fill {
+  width: 100%;
+  background: repeating-linear-gradient(
+    115deg,
+    var(--mint) 0 12px,
+    #a8ecd2 12px 24px
+  );
+}
+
+@keyframes meter-fill {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.pretty__meter-label {
+  position: relative;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  color: var(--pink-700);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* --------------------------------- arena --------------------------------- */
+
+.pretty__arena {
+  position: relative;
+  width: 100%;
+  height: clamp(400px, 58vh, 580px);
+  border-radius: var(--radius-lg);
+  border: 3px dashed var(--pink-300);
+  background:
+    radial-gradient(circle at 22% 20%, rgba(255, 240, 194, 0.55), transparent 45%),
+    radial-gradient(circle at 80% 78%, rgba(222, 208, 255, 0.5), transparent 45%),
+    rgba(255, 255, 255, 0.72);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  /* Let the page scroll vertically, but never let a chase drag the page sideways. */
+  touch-action: pan-y;
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+
+.pretty__arena[data-ready='true'] {
+  opacity: 1;
+}
+
+.pretty__arena[data-caught='true'] {
+  border-style: solid;
+  border-color: var(--pink-400);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 214, 234, 0.9), transparent 62%),
+    rgba(255, 255, 255, 0.86);
+}
+
+/* -------------------------------- choices -------------------------------- */
+
+.choice {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: clamp(148px, 38vw, 230px);
+  padding: clamp(0.8rem, 2.5vw, 1.2rem) 0.9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+
+  background: var(--white);
+  border: 3px solid var(--pink-200);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.choice__art {
+  position: relative;
+  font-size: clamp(2.4rem, 9vw, 3.6rem);
+  line-height: 1;
+  display: grid;
+  place-items: center;
+}
+
+.choice__label {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.05rem, 3.6vw, 1.5rem);
+  letter-spacing: 0.06em;
+}
+
+.choice__note {
+  font-family: var(--font-hand);
+  font-size: clamp(0.85rem, 2.6vw, 1.05rem);
+  color: var(--ink-soft);
+  line-height: 1.15;
+}
+
+/* --- moon: cool, silvery, deliberately handsome but wrong --- */
+.choice--moon {
+  background: linear-gradient(170deg, #ffffff, var(--sky));
+  border-color: #a9d6f5;
+  color: #17527d;
+  transition:
+    transform 260ms cubic-bezier(0.22, 1.4, 0.36, 1),
+    box-shadow 260ms ease;
+}
+
+.choice--moon:hover:not(:disabled) {
+  transform: translate3d(var(--tx, 0), var(--ty, 0), 0);
+  filter: brightness(1.04);
+  box-shadow: var(--shadow-lg);
+}
+
+.choice--moon:active:not(:disabled) {
+  filter: brightness(0.96);
+}
+
+.choice--moon:disabled {
+  opacity: 0.45;
+  filter: grayscale(0.5);
+  cursor: default;
+}
+
+.choice__moon-glow {
+  position: absolute;
+  width: 120%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(205, 234, 255, 0.95), transparent 68%);
+  animation: moon-glow 4s ease-in-out infinite;
+  z-index: -1;
+}
+
+@keyframes moon-glow {
+  0%,
+  100% {
+    transform: scale(0.9);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.95;
+  }
+}
+
+/* --- aila: warm, glossy, obviously the correct answer --- */
+/* Deliberately smaller than the moon card: a smaller target in a bigger
+   arena means more room to run, and it reads as "nimble". */
+.choice--aila {
+  width: clamp(120px, 27vw, 172px);
+  padding: clamp(0.6rem, 2vw, 0.9rem) 0.7rem;
+  background: linear-gradient(170deg, #ffffff, var(--pink-100) 60%, var(--butter));
+  border-color: var(--pink-400);
+  color: var(--pink-700);
+  z-index: 3;
+}
+
+.choice--aila .choice__art {
+  font-size: clamp(1.9rem, 6.6vw, 2.7rem);
+}
+
+.choice--aila .choice__label {
+  font-size: clamp(0.9rem, 3vw, 1.2rem);
+}
+
+.choice--aila .choice__note {
+  font-size: clamp(0.72rem, 2.2vw, 0.9rem);
+}
+
+.choice--aila[data-chasing='true'] {
+  box-shadow: var(--shadow-lg), var(--glow);
+}
+
+.choice__sparkle-ring {
+  position: absolute;
+  inset: -18%;
+  border-radius: 50%;
+  border: 3px dashed var(--pink-300);
+  animation: spin-slow 9s linear infinite;
+  z-index: -1;
+}
+
+.choice--aila[data-caught='true'] {
+  animation: aila-wins 900ms cubic-bezier(0.22, 1.5, 0.36, 1) both;
+  border-color: var(--pink-600);
+  box-shadow: var(--shadow-lg), 0 0 0 10px rgba(255, 143, 192, 0.28),
+    0 0 70px rgba(255, 95, 162, 0.7);
+}
+
+@keyframes aila-wins {
+  0% {
+    scale: 1;
+    rotate: 0deg;
+  }
+  45% {
+    scale: 1.3;
+    rotate: -6deg;
+  }
+  70% {
+    scale: 1.12;
+    rotate: 5deg;
+  }
+  100% {
+    scale: 1.18;
+    rotate: 0deg;
+  }
+}
+
+/* --- taunt speech bubble --- */
+.choice__taunt {
+  position: absolute;
+  top: -18px;
+  right: -14px;
+  padding: 0.3em 0.7em;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  color: var(--white);
+  background: linear-gradient(160deg, var(--pink-500), var(--pink-700));
+  border: 2.5px solid var(--white);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-sm);
+  animation: taunt-pop 900ms ease forwards;
+  pointer-events: none;
+}
+
+@keyframes taunt-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.4) rotate(-14deg);
+  }
+  25% {
+    opacity: 1;
+    transform: scale(1.12) rotate(6deg);
+  }
+  75% {
+    opacity: 1;
+    transform: scale(1) rotate(-3deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.9) translateY(-10px);
+  }
+}
+
+/* ------------------------------ wrong answer ------------------------------ */
+
+.pretty__wrong {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  gap: 0.5rem;
+  background: radial-gradient(circle, rgba(255, 95, 162, 0.22), rgba(255, 255, 255, 0.55));
+  z-index: 5;
+  pointer-events: none;
+  animation: fade-up 260ms ease both;
+}
+
+.pretty__stamp {
+  grid-area: 1 / 1;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(3rem, 16vw, 8rem);
+  letter-spacing: 0.06em;
+  color: rgba(233, 30, 99, 0.85);
+  border: 10px solid rgba(233, 30, 99, 0.8);
+  border-radius: 18px;
+  padding: 0.05em 0.25em;
+  transform: rotate(-14deg);
+  animation: stamp-slam 520ms cubic-bezier(0.2, 1.6, 0.4, 1) both;
+  text-shadow: 0 3px 0 rgba(255, 255, 255, 0.6);
+  mix-blend-mode: multiply;
+}
+
+@keyframes stamp-slam {
+  0% {
+    opacity: 0;
+    transform: rotate(-14deg) scale(3.2);
+  }
+  60% {
+    opacity: 1;
+    transform: rotate(-14deg) scale(0.92);
+  }
+  80% {
+    transform: rotate(-14deg) scale(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(-14deg) scale(1);
+  }
+}
+
+.pretty__wrong-cat {
+  grid-area: 1 / 1;
+  align-self: end;
+  justify-self: end;
+  margin: 0 clamp(0.5rem, 3vw, 2rem) clamp(0.5rem, 3vw, 1.5rem) 0;
+  animation: pop-in 460ms cubic-bezier(0.22, 1.4, 0.36, 1) 120ms both;
+}
+
+.pretty__hint {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0.4em 1em;
+  font-family: var(--font-hand);
+  font-size: 1.05rem;
+  color: var(--pink-700);
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px dashed var(--pink-300);
+  border-radius: var(--radius-pill);
+  animation: fade-up 500ms ease both;
+  pointer-events: none;
+}
+
+/* ------------------------------- verdicts -------------------------------- */
+
+.pretty__verdict {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.pretty__verdict-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.4rem, 6vw, 2.4rem);
+  color: #e91e63;
+}
+
+.pretty__verdict-sub {
+  margin: 0;
+  font-family: var(--font-hand);
+  font-size: clamp(1.1rem, 4vw, 1.7rem);
+  color: var(--ink-soft);
+}
+
+.pretty__verdict-count {
+  margin: 0.2rem 0 0;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+/* ------------------------------- punchline ------------------------------- */
+
+.pretty__punchline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  border-color: var(--pink-400);
+  background: linear-gradient(170deg, var(--white), var(--pink-50));
+}
+
+.pretty__punchline-cast {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.5rem, 3vw, 1.5rem);
+  flex-wrap: wrap;
+}
+
+@media (min-width: 700px) {
+  .pretty__punchline-cast {
+    flex-wrap: nowrap;
+  }
+}
+
+.pretty__punchline-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.pretty__loser {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2rem, 9vw, 4rem);
+  line-height: 1;
+  color: var(--pink-700);
+  animation: wobble-in 700ms cubic-bezier(0.22, 1.5, 0.36, 1) both;
+}
+
+.pretty__answer {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.6rem, 7.5vw, 3.2rem);
+  line-height: 1.05;
+  background: linear-gradient(100deg, var(--pink-500), var(--lavender-deep), var(--pink-600));
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation:
+    wobble-in 700ms cubic-bezier(0.22, 1.5, 0.36, 1) 140ms both,
+    shimmer 5s ease-in-out 900ms infinite;
+}
+
+.pretty__escape {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-hand);
+  font-size: clamp(1rem, 3.6vw, 1.45rem);
+  color: var(--ink-soft);
+  animation: fade-up 600ms ease 380ms both;
+}
+
+.pretty__stats {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+}
+
+@keyframes wobble-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(-12deg);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1.18) rotate(5deg);
+  }
+  75% {
+    transform: scale(0.96) rotate(-3deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+/* -------------------------------- mobile --------------------------------- */
+
+@media (max-width: 560px) {
+  .pretty__arena {
+    height: clamp(430px, 62vh, 560px);
+  }
+
+  .choice__taunt {
+    font-size: 0.72rem;
+    right: -8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .choice__sparkle-ring,
+  .choice__moon-glow,
+  .pretty__meter-fill {
+    animation: none !important;
+  }
+
+  /* reduced motion still needs the timer to be legible */
+  .pretty__meter[data-active='true'] .pretty__meter-fill {
+    width: 100%;
+    transition: none;
+    opacity: 0.35;
+  }
+}

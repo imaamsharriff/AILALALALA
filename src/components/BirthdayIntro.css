@@ -1,0 +1,134 @@
+.intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.75rem, 2.2vw, 1.25rem);
+  width: min(100%, 900px);
+}
+
+.intro__title {
+  animation: title-drop 900ms cubic-bezier(0.22, 1.35, 0.36, 1) both;
+}
+
+@keyframes title-drop {
+  0% {
+    opacity: 0;
+    transform: translateY(-60px) scale(0.7) rotate(-6deg);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(8px) scale(1.06) rotate(2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.intro__subtitle {
+  animation: fade-up 700ms ease 260ms both;
+  font-size: clamp(1.25rem, 4.6vw, 2rem);
+  color: var(--pink-700);
+}
+
+.intro__ribbon {
+  animation: fade-up 700ms ease 360ms both;
+}
+
+/* --- cast of characters --- */
+.intro__cast {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(0.5rem, 3vw, 2.4rem);
+  animation: fade-up 800ms ease 420ms both;
+}
+
+.intro__cast-item {
+  animation: float-y 5s ease-in-out infinite;
+}
+
+.intro__cast-item--left {
+  --rot: -6deg;
+  animation-delay: -1.2s;
+}
+
+.intro__cast-item--right {
+  --rot: 6deg;
+  animation-delay: -2.6s;
+}
+
+.intro__cake {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 0 0.5rem;
+}
+
+.intro__spark {
+  position: absolute;
+}
+
+.intro__spark--a {
+  top: -6%;
+  right: 2%;
+  animation-delay: 0.2s;
+}
+
+.intro__spark--b {
+  bottom: 18%;
+  left: -4%;
+  animation-delay: 0.9s;
+}
+
+.intro__spark--c {
+  top: 34%;
+  right: -8%;
+  animation-delay: 1.5s;
+}
+
+/* --- badges --- */
+.intro__badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  animation: fade-up 800ms ease 560ms both;
+}
+
+/* --- start button --- */
+.intro__start {
+  margin-top: 0.35rem;
+  font-size: clamp(1.05rem, 4.4vw, 1.6rem);
+  padding: 1em 2.1em;
+  animation:
+    pop-in 700ms cubic-bezier(0.22, 1.4, 0.36, 1) 700ms both,
+    btn-pulse 2.1s ease-in-out 1.4s infinite;
+}
+
+.intro__hint {
+  margin: 0;
+  font-family: var(--font-hand);
+  font-size: 1.1rem;
+  color: var(--ink-soft);
+  animation: fade-up 700ms ease 1s both;
+}
+
+/* --- phones: shrink the cast, stack nothing off-screen --- */
+@media (max-width: 560px) {
+  .intro__cast {
+    gap: 0.25rem;
+  }
+
+  .intro__cast-item--left,
+  .intro__cast-item--right {
+    transform: scale(0.78);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro__cast-item,
+  .intro__start {
+    animation: none !important;
+  }
+}

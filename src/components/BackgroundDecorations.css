@@ -1,0 +1,129 @@
+.bg-decor {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* --- drifting pastel blobs --- */
+.bg-decor__blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.5;
+  will-change: transform;
+}
+
+.bg-decor__blob--1 {
+  width: 46vmin;
+  height: 46vmin;
+  left: -10vmin;
+  top: 6vmin;
+  background: radial-gradient(circle, #ffc2dd, transparent 70%);
+  animation: blob-drift 24s ease-in-out infinite;
+}
+
+.bg-decor__blob--2 {
+  width: 54vmin;
+  height: 54vmin;
+  right: -14vmin;
+  top: 30vmin;
+  background: radial-gradient(circle, #d9c7ff, transparent 70%);
+  animation: blob-drift 30s ease-in-out infinite reverse;
+}
+
+.bg-decor__blob--3 {
+  width: 40vmin;
+  height: 40vmin;
+  left: 30vw;
+  bottom: -12vmin;
+  background: radial-gradient(circle, #ffe6a8, transparent 70%);
+  animation: blob-drift 27s ease-in-out infinite 3s;
+}
+
+@keyframes blob-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(4vw, -3vh, 0) scale(1.12);
+  }
+  66% {
+    transform: translate3d(-3vw, 4vh, 0) scale(0.94);
+  }
+}
+
+/* --- candy stripe ribbons on the edges --- */
+.bg-decor__ribbon {
+  position: absolute;
+  left: -10%;
+  width: 120%;
+  height: 16px;
+  background: repeating-linear-gradient(
+    115deg,
+    var(--pink-300) 0 16px,
+    rgba(255, 255, 255, 0.9) 16px 32px
+  );
+  opacity: 0.55;
+}
+
+.bg-decor__ribbon--top {
+  top: 0;
+  transform: rotate(-1.2deg);
+}
+
+.bg-decor__ribbon--bottom {
+  bottom: 0;
+  transform: rotate(1.2deg);
+}
+
+/* --- floating emoji charms --- */
+.bg-decor__charm {
+  position: absolute;
+  font-size: var(--size, 1.4rem);
+  opacity: var(--opacity, 0.6);
+  line-height: 1;
+  transform: rotate(var(--rot, 0deg));
+  animation: charm-float var(--dur, 8s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+  will-change: transform;
+  filter: drop-shadow(0 4px 6px rgba(201, 24, 95, 0.18));
+}
+
+@keyframes charm-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(var(--rot, 0deg));
+  }
+  50% {
+    transform: translate3d(var(--drift, 10px), -22px, 0)
+      rotate(calc(var(--rot, 0deg) * -1));
+  }
+}
+
+/* Density scales down with the viewport: phones get 8 charms, not 26. */
+.bg-decor__charm[data-tier='2'],
+.bg-decor__charm[data-tier='3'] {
+  display: none;
+}
+
+@media (min-width: 700px) {
+  .bg-decor__charm[data-tier='2'] {
+    display: block;
+  }
+}
+
+@media (min-width: 1100px) {
+  .bg-decor__charm[data-tier='3'] {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-decor__charm,
+  .bg-decor__blob {
+    animation: none !important;
+  }
+}
